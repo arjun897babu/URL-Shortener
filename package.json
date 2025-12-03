@@ -1,0 +1,36 @@
+{
+  "name": "url-shortener",
+  "version": "1.0.0",
+  "description": "A url shortener api service with express and NodeJs",
+  "main": "dist/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run build && node -r module-alias/register dist/main.js",
+    "dev": "ts-node -r tsconfig-paths/register src/main.ts",
+    "build": "npx tsc"
+  },
+  "author": "Arjun babu",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/module-alias": "^2.0.4",
+    "@types/node": "^24.10.1",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "express": "^5.2.1",
+    "module-alias": "^2.2.3",
+    "mongoose": "^9.0.0"
+  },
+  "_moduleAliases": {
+    "@": "dist",
+    "@service": "dist/service",
+    "@utils": "dist/utils",
+    "@config": "dist/config",
+    "@routes": "dist/routes",
+    "@repository": "dist/repository"
+  }
+}
