@@ -41,7 +41,9 @@
       "@repository/*": ["src/repository/*"],
       "@config/*": ["src/config/*"],
       "@routes/*": ["src/routes/*"],
-      "@service/*": ["src/service/*"]
+      "@service/*": ["src/service/*"],
+      "@model/*": ["src/model/*"],
+      "@controller/*": ["src/controller/*"]
     }
   },
   "include": ["src/**/*"]

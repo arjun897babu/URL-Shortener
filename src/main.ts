@@ -1,7 +1,4 @@
-
-import Server from './config/app'
-
-
+import Server from "@/config/app" 
 
 const server = new Server()
 

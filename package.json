@@ -12,9 +12,13 @@
   "author": "Arjun babu",
   "license": "ISC",
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/module-alias": "^2.0.4",
+    "@types/morgan": "^1.9.10",
     "@types/node": "^24.10.1",
+    "cors": "^2.8.5",
+    "morgan": "^1.10.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.3"
@@ -31,6 +35,8 @@
     "@utils": "dist/utils",
     "@config": "dist/config",
     "@routes": "dist/routes",
-    "@repository": "dist/repository"
+    "@repository": "dist/repository",
+    "@model": "dist/model",
+    "@controller": "dist/controller"
   }
 }
