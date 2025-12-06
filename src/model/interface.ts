@@ -1,8 +1,8 @@
 import { Document } from "mongoose";
 
 export interface IURLModel extends Document {
-    origin: string,
-    short: string,
-    alias?:string,
-    visitCount:number
+  origin: string;
+  short: string;
+  isCustom: boolean;
+  visitCount?: number;
 }
