@@ -4,5 +4,4 @@ export interface IURLModel extends Document {
   origin: string;
   short: string;
   isCustom: boolean;
-  visitCount?: number;
 }

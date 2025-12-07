@@ -3,6 +3,7 @@ import express, { Express } from "express";
 import morgan from "morgan";
 import cors from "cors";
 import { ErrorMiddleware } from "@/routes/middleware/error.middleware";
+import urlRoutes from "@/routes/url.routes";
 
 export default class Server {
   private server: Express;
@@ -36,8 +37,7 @@ export default class Server {
   }
 
   private routeHandler() {
-    this.server.use("/url");
-    this.server.use("/url/statics");
+    this.server.use("/url", urlRoutes);
   }
 
   startServer() {

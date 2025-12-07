@@ -13,10 +13,6 @@ const urlModelSchema = new Schema<IURLModel>(
       required: true,
       unique: true,
     },
-    visitCount: {
-      type: Number,
-      default: 0,
-    },
     isCustom: {
       type: Boolean,
       default: false,

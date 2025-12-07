@@ -1,4 +1,3 @@
-import { logger } from "@/_default";
 import { IURLService } from "@/service/interface";
 import { HttpStatusCode } from "@/utils/constant";
 import CustomError from "@/utils/custom.error";
@@ -12,27 +11,31 @@ export class URLController {
 
   async redirect(req: Request, res: Response, next: NextFunction) {
     try {
-      const userAgent = req.headers?.["user-agent"];
       const { url = "" } = req.params;
       const { origin } = await this.URLService.get(url);
-      res.redirect(origin);
+
+      if (!origin) {
+        throw new CustomError(
+          "Short URL is not found",
+          HttpStatusCode.NotFound
+        );
+      }
+      return res.redirect(origin);
     } catch (error) {
       next(error);
     }
   }
   async create(req: Request, res: Response, next: NextFunction) {
-    try {
-      const userAgent = req.headers?.["user-agent"];
+    try { 
 
       const { url: origin, alias = "" } = req.body;
 
       await this.checkOriginExists(origin);
-
-      await this.URLService.create({
-        origin,
-        userAgent,
+      const response = await this.URLService.create({
+        origin, 
         alias,
       });
+      res.json(HttpStatusCode.Created).json(response);
     } catch (error) {
       next(error);
     }
@@ -46,14 +49,6 @@ export class URLController {
       const response = await this.URLService.delete(url);
 
       res.status(HttpStatusCode.Ok).json(response);
-    } catch (error) {
-      next(error);
-    }
-  }
-  async update(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { url: shortKey } = req.params;
-      const { url = "" } = req.body;
     } catch (error) {
       next(error);
     }

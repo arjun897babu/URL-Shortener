@@ -1,8 +1,7 @@
 export interface ICreateRepo {
   origin: string;
   short: string;
-  alias?: boolean;
-  userAgent: any;
+  alias?: boolean; 
 }
 
 export interface IShort {
@@ -11,8 +10,9 @@ export interface IShort {
 }
 
 export interface IURLRepo {
-  create(data: ICreateRepo): Promise<void>;
-  update(data: IShort): Promise<void>;
+  create(data: ICreateRepo): Promise<void>; 
   delete(short: IShort["short"]): Promise<void>;
-  get(short: IShort["short"]): Promise<{ origin: ICreateRepo["origin"] }>;
+  get(
+    short: IShort["short"]
+  ): Promise<{ origin: ICreateRepo["origin"] | undefined }>;
 }

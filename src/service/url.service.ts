@@ -1,7 +1,8 @@
 import { nanoid } from "nanoid";
 import { ICreateUrl, IURLService } from "./interface";
 import { ICreateRepo, IURLRepo } from "@/repository/interface";
-import { IResponse } from "@/utils/constant";
+import { HttpStatusCode, IResponse } from "@/utils/constant";
+import CustomError from "@/utils/custom.error";
 
 export class URLService implements IURLService {
   private shortKeyLength: number;
@@ -25,17 +26,30 @@ export class URLService implements IURLService {
    * @returns  {IResponse & {origin:string}}
    */
   async create({
-    origin,
-    userAgent,
+    origin, 
     alias = "",
   }: ICreateUrl): Promise<IResponse & { short: string }> {
     try {
-      const data = {
+      const data: Partial<ICreateRepo> = {
         origin,
-        userAgent,
-        short: this.generateShortKey(),
       };
-      await this.urlRepo.create(data);
+
+      if (alias) {
+        const { origin } = await this.urlRepo.get(alias);
+        if (origin) {
+          throw new CustomError(
+            "Provided custom alias is already taken",
+            HttpStatusCode.Conflict
+          );
+        }
+        data.short = alias;
+        data.alias = true;
+      } else {
+        data.short = this.generateShortKey();
+      }
+
+      await this.urlRepo.create(data as ICreateRepo);
+
       return {
         status: true,
         msg: `New short URL created for the given origin`,
@@ -67,14 +81,16 @@ export class URLService implements IURLService {
    * @returns  {IResponse&{origin:string}}
    */
 
-  async get(shortURL: string): Promise<IResponse & { origin: string }> {
+  async get(
+    shortURL: string
+  ): Promise<IResponse & { origin: string | undefined }> {
     try {
       const { origin } = await this.urlRepo.get(shortURL);
 
       return {
         status: true,
         msg: "Redirecting to origin....",
-        origin,
+        origin: origin,
       };
     } catch (error) {
       throw error;
