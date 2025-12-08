@@ -1,3 +1,4 @@
+import { URLShortenerEnv } from "@/config/env";
 import { IURLService } from "@/service/interface";
 import { HttpStatusCode } from "@/utils/constant";
 import CustomError from "@/utils/custom.error";
@@ -9,10 +10,15 @@ export class URLController {
     this.URLService = urlService;
   }
 
+  private generateShortURL(url: string) {
+    return `${URLShortenerEnv.origin}/${url}`;
+  }
+
   async redirect(req: Request, res: Response, next: NextFunction) {
     try {
       const { url = "" } = req.params;
-      const { origin } = await this.URLService.get(url);
+
+      const { origin } = await this.URLService.get(this.generateShortURL(url));
 
       if (!origin) {
         throw new CustomError(
@@ -26,16 +32,16 @@ export class URLController {
     }
   }
   async create(req: Request, res: Response, next: NextFunction) {
-    try { 
-
+    try {
       const { url: origin, alias = "" } = req.body;
+      console.log("req.body :", req.body);
 
       await this.checkOriginExists(origin);
       const response = await this.URLService.create({
-        origin, 
+        origin,
         alias,
       });
-      res.json(HttpStatusCode.Created).json(response);
+      res.status(HttpStatusCode.Created).json(response);
     } catch (error) {
       next(error);
     }
@@ -43,10 +49,8 @@ export class URLController {
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const { url = "" } = req.params;
-      if (!url)
-        throw new CustomError("URL is missing", HttpStatusCode.BadRequest);
 
-      const response = await this.URLService.delete(url);
+      const response = await this.URLService.delete(this.generateShortURL(url));
 
       res.status(HttpStatusCode.Ok).json(response);
     } catch (error) {

@@ -3,6 +3,7 @@ import { ICreateUrl, IURLService } from "./interface";
 import { ICreateRepo, IURLRepo } from "@/repository/interface";
 import { HttpStatusCode, IResponse } from "@/utils/constant";
 import CustomError from "@/utils/custom.error";
+import { URLShortenerEnv } from "@/config/env";
 
 export class URLService implements IURLService {
   private shortKeyLength: number;
@@ -18,7 +19,7 @@ export class URLService implements IURLService {
    */
 
   private generateShortKey() {
-    return nanoid(this.shortKeyLength);
+    return `${URLShortenerEnv.origin}/${nanoid(this.shortKeyLength)}`;
   }
 
   /**
@@ -26,7 +27,7 @@ export class URLService implements IURLService {
    * @returns  {IResponse & {origin:string}}
    */
   async create({
-    origin, 
+    origin,
     alias = "",
   }: ICreateUrl): Promise<IResponse & { short: string }> {
     try {

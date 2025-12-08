@@ -1,7 +1,7 @@
 import { URLModel } from "@/model/url.model";
 import { ICreateRepo, IShort, IURLRepo } from "./interface";
 import CustomError from "@/utils/custom.error";
-import { HttpStatusCode } from "@/utils/constant";
+import { HttpStatusCode } from "@/utils/constant"; 
 
 /* The URLRepo class in implements methods for creating, deleting, updating, and retrieving
 URLs . */
@@ -13,8 +13,13 @@ export default class URLRepo implements IURLRepo {
   async create(data: ICreateRepo): Promise<void> {
     try {
       await URLModel.create(data);
-    } catch (error) {
-      console.log(error, typeof error);
+    } catch (error: any) {
+      if (error?.code == 11000) {
+        throw new CustomError(
+          "The provided URL already exists.",
+          HttpStatusCode.Conflict
+        );
+      }
       throw error;
     }
   }
@@ -47,7 +52,6 @@ export default class URLRepo implements IURLRepo {
       throw error;
     }
   }
- 
 
   /**
    * @param short - The `short` parameter check if a short URL exists

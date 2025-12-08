@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run build && node -r module-alias/register dist/main.js",
-    "dev": "ts-node -r tsconfig-paths/register src/main.ts",
+    "dev": "nodemon -r tsconfig-paths/register src/main.ts",
     "build": "npx tsc"
   },
   "author": "Arjun babu",
@@ -24,10 +24,12 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "module-alias": "^2.2.3",
     "mongoose": "^9.0.0",
-    "nanoid": "^5.1.6"
+    "nanoid": "^5.1.6",
+    "nodemon": "^3.1.11"
   },
   "_moduleAliases": {
     "@": "dist",

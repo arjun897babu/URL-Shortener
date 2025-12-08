@@ -1,5 +1,7 @@
-import Server from "@/config/app" 
+import Server from "@/config/app";
+import ConnectDB from "./config/db";
 
-const server = new Server()
+const db = new ConnectDB();
+const server = new Server(db);
 
-server.startServer()
+server.startServer();

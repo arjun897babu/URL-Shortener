@@ -4,9 +4,9 @@ import { Router } from "express";
 const urlRoutes = Router();
 
 urlRoutes
-  .route("/")
+  .route("/:url")
   .get(urlController.redirect.bind(urlController))
-  .post(urlController.create.bind(urlController))
-  .delete(urlController.delete.bind(urlController)) 
+  .delete(urlController.delete.bind(urlController));
 
+urlRoutes.route("/").post(urlController.create.bind(urlController));
 export default urlRoutes;
