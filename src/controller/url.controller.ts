@@ -1,31 +1,46 @@
 import { URLShortenerEnv } from "@/config/env";
-import { IURLService } from "@/service/interface";
+import { IAddAnalytics } from "@/repository/interface";
+import { IAnalyticsService, IURLService } from "@/service/interface";
 import { HttpStatusCode } from "@/utils/constant";
 import CustomError from "@/utils/custom.error";
+import { generateShortURL } from "@/utils/helper";
 import { NextFunction, Request, Response } from "express";
+import mongoose from "mongoose";
+import { UAParser } from "ua-parser-js";
 
 export class URLController {
-  URLService: IURLService;
-  constructor(urlService: IURLService) {
-    this.URLService = urlService;
-  }
+  private URLService: IURLService;
+  private analyticsService: IAnalyticsService;
 
-  private generateShortURL(url: string) {
-    return `${URLShortenerEnv.origin}/${url}`;
+  constructor(urlService: IURLService, analyticsService: IAnalyticsService) {
+    this.URLService = urlService;
+    this.analyticsService = analyticsService;
   }
 
   async redirect(req: Request, res: Response, next: NextFunction) {
     try {
-      const { url = "" } = req.params;
+      const { url = "" } = req.params; 
+      const { origin, _id } = await this.URLService.get(generateShortURL(url)); 
+      const parser = new UAParser(req.headers["user-agent"] || "");
+      const { browser, ua, os } = parser.getResult();
 
-      const { origin } = await this.URLService.get(this.generateShortURL(url));
+      const analyticData: IAddAnalytics = {
+        urlId: _id,
+        userAgent: ua,
+      };
 
-      if (!origin) {
-        throw new CustomError(
-          "Short URL is not found",
-          HttpStatusCode.NotFound
-        );
+      if (browser?.name) {
+        analyticData.browser = browser.name;
       }
+      if (os?.name) {
+        analyticData.os = os.name;
+      }
+      if (req?.ip) {
+        analyticData.ip = req.ip;
+      }
+
+      await this.analyticsService.add(analyticData);
+
       return res.redirect(origin);
     } catch (error) {
       next(error);
@@ -50,7 +65,7 @@ export class URLController {
     try {
       const { url = "" } = req.params;
 
-      const response = await this.URLService.delete(this.generateShortURL(url));
+      const response = await this.URLService.delete(generateShortURL(url));
 
       res.status(HttpStatusCode.Ok).json(response);
     } catch (error) {

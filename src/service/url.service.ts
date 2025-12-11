@@ -1,14 +1,19 @@
 import { nanoid } from "nanoid";
 import { ICreateUrl, IURLService } from "./interface";
-import { ICreateRepo, IURLRepo } from "@/repository/interface";
+import {
+  IAddAnalytics,
+  IAnalyticsRepo,
+  ICreateRepo,
+  IURLRepo,
+} from "@/repository/interface";
 import { HttpStatusCode, IResponse } from "@/utils/constant";
 import CustomError from "@/utils/custom.error";
 import { URLShortenerEnv } from "@/config/env";
+import { IURLModel } from "@/model/interface";
 
 export class URLService implements IURLService {
   private shortKeyLength: number;
   private urlRepo: IURLRepo;
-
   constructor(URLRepo: IURLRepo) {
     this.shortKeyLength = 12;
     this.urlRepo = URLRepo;
@@ -36,8 +41,8 @@ export class URLService implements IURLService {
       };
 
       if (alias) {
-        const { origin } = await this.urlRepo.get(alias);
-        if (origin) {
+        const response = await this.urlRepo.get(alias);
+        if (!response) {
           throw new CustomError(
             "Provided custom alias is already taken",
             HttpStatusCode.Conflict
@@ -84,14 +89,19 @@ export class URLService implements IURLService {
 
   async get(
     shortURL: string
-  ): Promise<IResponse & { origin: string | undefined }> {
+  ): Promise<IResponse & Pick<IURLModel, "_id" | "origin">> {
     try {
-      const { origin } = await this.urlRepo.get(shortURL);
-
+      const response = await this.urlRepo.get(shortURL); 
+      if (!response) {
+        throw new CustomError(
+          "Provided short url is not found",
+          HttpStatusCode.NotFound
+        );
+      }
       return {
         status: true,
         msg: "Redirecting to origin....",
-        origin: origin,
+        ...response,
       };
     } catch (error) {
       throw error;

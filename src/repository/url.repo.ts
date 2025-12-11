@@ -1,7 +1,8 @@
 import { URLModel } from "@/model/url.model";
 import { ICreateRepo, IShort, IURLRepo } from "./interface";
 import CustomError from "@/utils/custom.error";
-import { HttpStatusCode } from "@/utils/constant"; 
+import { HttpStatusCode } from "@/utils/constant";
+import { IURLModel } from "@/model/interface";
 
 /* The URLRepo class in implements methods for creating, deleting, updating, and retrieving
 URLs . */
@@ -43,11 +44,10 @@ export default class URLRepo implements IURLRepo {
 
   private async isShortExist(
     short: string
-  ): Promise<{ origin: ICreateRepo["origin"] | undefined }> {
+  ): Promise<Pick<IURLModel, "_id" | "origin"> | null> {
     try {
-      const response = await URLModel.findOne({ short }, { origin: 1 });
-
-      return { origin: response?.origin };
+      const response = await URLModel.findOne({ short }, { origin: 1 }).lean();
+      return response;
     } catch (error) {
       throw error;
     }
@@ -59,7 +59,7 @@ export default class URLRepo implements IURLRepo {
    */
   async get(
     short: IShort["short"]
-  ): Promise<{ origin: ICreateRepo["origin"] | undefined }> {
+  ): Promise<Pick<IURLModel, "_id" | "origin"> | null> {
     try {
       const response = await this.isShortExist(short);
       return response;
